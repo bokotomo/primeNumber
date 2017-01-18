@@ -2,39 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
-
-#define NUM 5000
+#include "qsort.h"
+#include "omp_functions.h"
 
 //プロトタイプ宣言
-int getNowThreadsNum();
 int measurement(long maxValue, long *data);
 void setCSVFile(long maxValue, long *data, long primeNumberNum);
-
-int getNowThreadsNum(){
-  int threadsNum;
-
-  #pragma omp parallel
-  {
-    #pragma omp single
-    {
-      threadsNum = omp_get_num_threads();
-    }
-  }
-  return threadsNum;
-}
-
-//スレッド数の設定
-void setThreadsNum(int threadsNum){
-  omp_set_num_threads(threadsNum);
-
-  #pragma omp parallel num_threads(threadsNum)
-  {
-    #pragma omp single
-    {
-      printf("ThreadsNum/ThreadsMax = %d/%d\n", omp_get_num_threads(), omp_get_max_threads());
-    }
-  }  
-}
 
 //素数
 int measurement(long maxValue, long *data){
@@ -70,13 +43,13 @@ void setCSVFile(long maxValue, long *data, long primeNumberNum){
   char FilePath[100];
   char Msg[100];
 
-  sprintf(FilePath, "./sosu_%ld.csv", maxValue);
+  sprintf(FilePath, "./primeNumber_%ld.csv", maxValue);
   if((FilePointer = fopen(FilePath, "w")) == NULL) {
     printf("csv file open error!!\n");
     exit(EXIT_FAILURE);
   }else{
     printf("CSVFilePath     %s\n", FilePath);
-    sprintf(Msg, "ID, 素数\n");
+    sprintf(Msg, "ID, PrimeNumber\n");
     fputs(Msg, FilePointer);
   }
 
@@ -106,10 +79,15 @@ int main(int argc, char *argv[]){
 
   endTime = omp_get_wtime();
   resultTime = (double)(endTime - startTime);
-  printf("Time is %lf (sec)\n", resultTime);
+
+  puts("\n-------------------------------");
+  printf("Time           is %lf (sec)\n", resultTime);
   
-  printf("素数の数は %ld (個)\n", primeNumberNum);
+  printf("primeNumberNum is %ld (pieces)\n", primeNumberNum);
   
+  //ソート
+  QSort(data, 0, primeNumberNum - 1);
+
   //CSVファイルに書き込み
   setCSVFile(maxValue, data, primeNumberNum);
 
