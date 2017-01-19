@@ -12,8 +12,10 @@ int measurement(long n, long *data){
   int primeNumberNum = 0;
   long temp = 0;
 
-  for(i=2;i<=n;i++){
-    for(b=2;b<i;b++){
+  data[primeNumberNum++] = 2;
+
+  for(i=3;i<=n;i+=2){
+    for(b=3;b<i;b+=2){
       if(i%b==0){
         temp=1;
         break;

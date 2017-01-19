@@ -19,15 +19,15 @@ int measurement(long maxValue, long *data){
   #pragma omp parallel num_threads(threadsNum),shared(primeNumberNum)
   {
     #pragma omp for private(i,j,temp),reduction(+:primeNumberNum)
-    for(i=2;i<=maxValue;i++){
-      for(j=2;j<i;j++){
+    for(i=3;i<=maxValue;i+=2){
+      for(j=3;j<i;j+=2){
         if(i%j==0){
           temp=1;
           break;
         }
       }
       if(temp==0){
-        //printf("%ld\n", (long)maxValue/28 * omp_get_thread_num() + primeNumberNum);
+        //printf("%ld\n", (long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum);
         data[(long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum] = i;
         primeNumberNum++;
       }else{
@@ -35,6 +35,7 @@ int measurement(long maxValue, long *data){
       }
     }
   }
+  data[primeNumberNum++] = 2;
   return primeNumberNum;
 }
 
