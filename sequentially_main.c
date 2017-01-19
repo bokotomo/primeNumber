@@ -5,21 +5,21 @@
 
 //プロトタイプ宣言
 int measurement(long maxValue, long *data);
-void setCSVFile(long maxValue, long *data, int primeNumberNum);
+void setCSVFile(long maxValue, long *data, long primeNumberNum);
 
 //素数
 int measurement(long maxValue, long *data){
-  long i,b;
-  int primeNumberNum = 0;
-  long flag = 0;
+  long i, j;
+  long primeNumberNum = 0;
+  int flag = 0;
 
   data[primeNumberNum++] = 2;
   data[primeNumberNum++] = 3;
   data[primeNumberNum++] = 5;
 
   for(i = 7; i <= maxValue; i+=2){
-    for(b = 7; b * b <= i; b++){
-      if(i%b == 0){
+    for(j = 3; j * j <= i; j++){
+      if(i % j == 0){
         flag = 1;
         break;
       }
@@ -35,7 +35,7 @@ int measurement(long maxValue, long *data){
 }
 
 //CSVファイル書き出し
-void setCSVFile(long maxValue, long *data, int primeNumberNum){
+void setCSVFile(long maxValue, long *data, long primeNumberNum){
   int i;
   FILE *FilePointer;
   char FilePath[100];
@@ -60,7 +60,7 @@ void setCSVFile(long maxValue, long *data, int primeNumberNum){
 int main(int argc, char *argv[]){
   long maxValue;
   long *data;
-  int primeNumberNum;
+  long primeNumberNum;
   clock_t start, end;
 
   puts("求める素数の最大値を入力");
@@ -79,6 +79,11 @@ int main(int argc, char *argv[]){
   //CSVファイルに書き込み
   setCSVFile(maxValue, data, primeNumberNum);
 
-  printf("time   is %f秒\n", (double)(end - start) / CLOCKS_PER_SEC);
+  //結果表示
+  puts("\n-------------------------------");
+  printf("Time           is %lf (sec)\n", (double)(end - start) / CLOCKS_PER_SEC);
+  
+  printf("primeNumberNum is %ld (pieces)\n", primeNumberNum);
+
   return 0;
 }
