@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
-#include "qsort.h"
-#include "omp_functions.h"
+#include "header/qsort.h"
+#include "header/omp_functions.h"
 
 //プロトタイプ宣言
 int measurement(long maxValue, long *data);
@@ -11,26 +11,28 @@ void setCSVFile(long maxValue, long *data, long primeNumberNum);
 
 //素数
 int measurement(long maxValue, long *data){
-  long i;
-  long b;
+  long i,j;
   long primeNumberNum = 0;
   long temp = 0;
   int threadsNum = getNowThreadsNum();
 
-  #pragma omp parallel num_threads(threadsNum)
+  #pragma omp parallel num_threads(threadsNum),shared(primeNumberNum)
   {
-    #pragma omp for private(i,b,temp)
+    #pragma omp for private(i,j,temp),reduction(+:primeNumberNum)
     for(i=2;i<=maxValue;i++){
-      for(b=1;b<=maxValue;b++){
-        if(i%b==0){
-          temp++;
+      for(j=2;j<i;j++){
+        if(i%j==0){
+          temp=1;
+          break;
         }
       }
-      if(temp<3){
-        data[primeNumberNum] = i;
+      if(temp==0){
+        //printf("%ld\n", (long)maxValue/28 * omp_get_thread_num() + primeNumberNum);
+        data[(long)maxValue/28 * omp_get_thread_num() + primeNumberNum] = i;
         primeNumberNum++;
+      }else{
+        temp=0;
       }
-      temp=0;
     }
   }
   return primeNumberNum;
@@ -38,12 +40,12 @@ int measurement(long maxValue, long *data){
 
 //CSVファイル書き出し
 void setCSVFile(long maxValue, long *data, long primeNumberNum){
-  int i;
+  int i,j=1;
   FILE *FilePointer;
   char FilePath[100];
   char Msg[100];
 
-  sprintf(FilePath, "./primeNumber_%ld.csv", maxValue);
+  sprintf(FilePath, "./data/primeNumber_%ld.csv", maxValue);
   if((FilePointer = fopen(FilePath, "w")) == NULL) {
     printf("csv file open error!!\n");
     exit(EXIT_FAILURE);
@@ -53,8 +55,8 @@ void setCSVFile(long maxValue, long *data, long primeNumberNum){
     fputs(Msg, FilePointer);
   }
 
-  for(i = 0; i < primeNumberNum; i++){
-    sprintf(Msg, "%d, %ld\n", (i + 1), data[i]);
+  for(i = maxValue-primeNumberNum; i < maxValue; i++){
+    sprintf(Msg, "%d, %ld\n", j++, data[i]);
     fputs(Msg, FilePointer);
   }
 }
@@ -86,7 +88,7 @@ int main(int argc, char *argv[]){
   printf("primeNumberNum is %ld (pieces)\n", primeNumberNum);
   
   //ソート
-  QSort(data, 0, primeNumberNum - 1);
+  QSort(data, 0, maxValue - 1);
 
   //CSVファイルに書き込み
   setCSVFile(maxValue, data, primeNumberNum);

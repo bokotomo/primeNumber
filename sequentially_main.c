@@ -2,30 +2,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NUM 5000
-
 //プロトタイプ宣言
 int measurement(long n, long *data);
 void setCSVFile(long n, long *data, int primeNumberNum);
 
 //素数
 int measurement(long n, long *data){
-  long i;
-  long b;
+  long i,b;
   int primeNumberNum = 0;
   long temp = 0;
 
   for(i=2;i<=n;i++){
-    for(b=1;b<=n;b++){
+    for(b=2;b<i;b++){
       if(i%b==0){
-        temp++;
+        temp=1;
+        break;
       }
     }
-    if(temp<3){
+    if(temp==0){
       data[primeNumberNum] = i;
-      primeNumberNum++;
+      primeNumberNum += 1;
+    }else{
+      temp=0;
     }
-    temp=0;
   }
   return primeNumberNum;
 }
@@ -37,13 +36,13 @@ void setCSVFile(long n, long *data, int primeNumberNum){
   char FilePath[100];
   char Msg[100];
 
-  sprintf(FilePath, "./sosu_%ld.csv", n);
+  sprintf(FilePath, "./data/primeNumber_%ld.csv", n);
   if((FilePointer = fopen(FilePath, "w")) == NULL) {
     printf("csv file open error!!\n");
     exit(EXIT_FAILURE);
   }else{
     printf("CSVFilePath     %s\n", FilePath);
-    sprintf(Msg, "ID, 素数\n");
+    sprintf(Msg, "ID, PrimeNumber\n");
     fputs(Msg, FilePointer);
   }
 
@@ -58,10 +57,11 @@ int main(int argc, char *argv[]){
   long *data;
   int primeNumberNum;
   
-  data = (long *)malloc(sizeof(long) * NUM);
 
   puts("求める素数の最大値を入力");
   scanf("%ld", &n);
+  
+  data = (long *)malloc(sizeof(long) * n);
   
   //素数計算
   primeNumberNum = measurement(n, data);
