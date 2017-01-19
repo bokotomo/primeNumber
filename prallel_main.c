@@ -28,7 +28,7 @@ int measurement(long maxValue, long *data){
       }
       if(temp==0){
         //printf("%ld\n", (long)maxValue/28 * omp_get_thread_num() + primeNumberNum);
-        data[(long)maxValue/28 * omp_get_thread_num() + primeNumberNum] = i;
+        data[(long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum] = i;
         primeNumberNum++;
       }else{
         temp=0;
@@ -66,11 +66,13 @@ int main(int argc, char *argv[]){
   long maxValue;
   long *data;
   long primeNumberNum;
+  int threadsNum;
   
   puts("求める素数の最大値を入力");
   scanf("%ld", &maxValue);
 
-  setThreadsNum(28);
+  threadsNum = atoi(argv[1]);
+  setThreadsNum(threadsNum);
 
   data = (long *)malloc(sizeof(long *) * maxValue);
 
