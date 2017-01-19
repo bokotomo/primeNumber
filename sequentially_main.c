@@ -13,9 +13,11 @@ int measurement(long n, long *data){
   long temp = 0;
 
   data[primeNumberNum++] = 2;
+  data[primeNumberNum++] = 3;
+  data[primeNumberNum++] = 5;
 
-  for(i=3;i<=n;i+=2){
-    for(b=3;b<i;b+=2){
+  for(i=7;i<=n;i+=2){
+    for(b=7;b*b<=i;b++){
       if(i%b==0){
         temp=1;
         break;

@@ -8,17 +8,27 @@
 4. SIMD  
 
 # DEMO
-OpenMPを使った並列処理のプログラム  
+・OpenMPを使った並列処理のプログラム  
 sh gcc_prallel.sh  
 ./a.out 10 (RUNFILE ThreadsNum) 
 
-並列処理なしのプログラム  
+・並列処理なしのプログラム  
 sh gcc_seq.sh  
 ./a.out  
 
 # PROGRAM
-並列処理なしのプログラム  
+・OpenMPを使った並列処理のプログラム  
+prallel_main.c  
+
+・並列処理なしのプログラム  
 sequentially_main.c  
 
-OpenMPを使った並列処理のプログラム  
-prallel_main.c  
+# Performance at the moment
+0 - 10,000,000(Number of natural numbers)  
+・2.1GHz, 36(core)  
+1thread    18.22(sec)  
+36threads  0.71(sec)  
+
+・2.4GHz, 28(core)  
+1thread    16.45(sec)  
+28threads  0.82(sec)  

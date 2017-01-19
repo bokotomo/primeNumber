@@ -16,11 +16,15 @@ int measurement(long maxValue, long *data){
   long temp = 0;
   int threadsNum = getNowThreadsNum();
 
+  data[primeNumberNum++] = 2;
+  data[primeNumberNum++] = 3;
+  data[primeNumberNum++] = 5;
+
   #pragma omp parallel num_threads(threadsNum),shared(primeNumberNum)
   {
     #pragma omp for private(i,j,temp),reduction(+:primeNumberNum)
-    for(i=3;i<=maxValue;i+=2){
-      for(j=3;j<i;j+=2){
+    for(i=7;i<=maxValue;i+=2){
+      for(j=2;j*j<=i;j++){
         if(i%j==0){
           temp=1;
           break;
@@ -28,14 +32,13 @@ int measurement(long maxValue, long *data){
       }
       if(temp==0){
         //printf("%ld\n", (long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum);
-        data[(long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum] = i;
+        data[(long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum + 3] = i;
         primeNumberNum++;
       }else{
         temp=0;
       }
     }
   }
-  data[primeNumberNum++] = 2;
   return primeNumberNum;
 }
 
