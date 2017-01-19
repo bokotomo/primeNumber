@@ -1,46 +1,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 //プロトタイプ宣言
-int measurement(long n, long *data);
-void setCSVFile(long n, long *data, int primeNumberNum);
+int measurement(long maxValue, long *data);
+void setCSVFile(long maxValue, long *data, int primeNumberNum);
 
 //素数
-int measurement(long n, long *data){
+int measurement(long maxValue, long *data){
   long i,b;
   int primeNumberNum = 0;
-  long temp = 0;
+  long flag = 0;
 
   data[primeNumberNum++] = 2;
   data[primeNumberNum++] = 3;
   data[primeNumberNum++] = 5;
 
-  for(i=7;i<=n;i+=2){
-    for(b=7;b*b<=i;b++){
-      if(i%b==0){
-        temp=1;
+  for(i = 7; i <= maxValue; i+=2){
+    for(b = 7; b * b <= i; b++){
+      if(i%b == 0){
+        flag = 1;
         break;
       }
     }
-    if(temp==0){
+    if(flag == 0){
       data[primeNumberNum] = i;
       primeNumberNum += 1;
     }else{
-      temp=0;
+      flag = 0;
     }
   }
   return primeNumberNum;
 }
 
 //CSVファイル書き出し
-void setCSVFile(long n, long *data, int primeNumberNum){
+void setCSVFile(long maxValue, long *data, int primeNumberNum){
   int i;
   FILE *FilePointer;
   char FilePath[100];
   char Msg[100];
 
-  sprintf(FilePath, "./data/primeNumber_%ld.csv", n);
+  sprintf(FilePath, "./data/primeNumber_%ld.csv", maxValue);
   if((FilePointer = fopen(FilePath, "w")) == NULL) {
     printf("csv file open error!!\n");
     exit(EXIT_FAILURE);
@@ -57,21 +58,27 @@ void setCSVFile(long n, long *data, int primeNumberNum){
 }
 
 int main(int argc, char *argv[]){
-  long n;
+  long maxValue;
   long *data;
   int primeNumberNum;
-  
+  clock_t start, end;
 
   puts("求める素数の最大値を入力");
-  scanf("%ld", &n);
+  scanf("%ld", &maxValue);
   
-  data = (long *)malloc(sizeof(long) * n);
+  //配列作成
+  data = (long *)malloc(sizeof(long) * maxValue);
+  
+  start = clock();
   
   //素数計算
-  primeNumberNum = measurement(n, data);
+  primeNumberNum = measurement(maxValue, data);
+
+  end = clock();
 
   //CSVファイルに書き込み
-  setCSVFile(n, data, primeNumberNum);
+  setCSVFile(maxValue, data, primeNumberNum);
 
+  printf("time   is %f秒\n", (double)(end - start) / CLOCKS_PER_SEC);
   return 0;
 }

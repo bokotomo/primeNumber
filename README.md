@@ -26,10 +26,10 @@ sequentially_main.c
 # Performance at the moment
 0 - 10,000,000(Number of natural numbers)  
 ・2.1GHz, 36(core)  
-1thread          18.15(sec)  
-36threads        0.7118(sec)  
-36threads(numa)  0.7116(sec)(numactl --interleave=all ./a.out 36)  
+1thread ---------- 18.15(sec)  
+36threads -------- 0.7118(sec)  
+36threads(numa) -- 0.7116(sec) (numactl --interleave=all ./a.out 36)  
 
 ・2.4GHz, 28(core)  
-1thread          16.25(sec)  
-28threads        0.82(sec)  
+1thread ---------- 16.25(sec)  
+28threads -------- 0.82(sec)  

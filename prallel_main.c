@@ -11,29 +11,29 @@ void setCSVFile(long maxValue, long *data, long primeNumberNum);
 
 //素数
 int measurement(long maxValue, long *data){
-  long i,j;
+  long i, j;
   long primeNumberNum = 0;
-  long temp = 0;
+  int flag = 0;
   int threadsNum = getNowThreadsNum();
 
   data[primeNumberNum++] = 2;
 
   #pragma omp parallel num_threads(threadsNum),shared(primeNumberNum)
   {
-    #pragma omp for private(i,j,temp),reduction(+:primeNumberNum)
-    for(i=3;i<=maxValue;i+=2){
-      for(j=3;j*j<=i;j++){
-        if(i%j==0){
-          temp=1;
+    #pragma omp for private(i,j,flag),reduction(+:primeNumberNum)
+    for(i = 3; i <= maxValue; i += 2){
+      for(j = 3; j * j <= i; j++){
+        if(i % j == 0){
+          flag = 1;
           break;
         }
       }
-      if(temp==0){
+      if(flag == 0){
         //printf("%ld\n", (long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum);
         data[(long)maxValue/threadsNum * omp_get_thread_num() + primeNumberNum + 1] = i;
         primeNumberNum++;
       }else{
-        temp=0;
+        flag = 0;
       }
     }
   }
@@ -73,11 +73,14 @@ int main(int argc, char *argv[]){
   puts("求める素数の最大値を入力");
   scanf("%ld", &maxValue);
 
+  //スレッド数の設定
   threadsNum = atoi(argv[1]);
   setThreadsNum(threadsNum);
 
+  //格納用配列宣言
   data = (long *)malloc(sizeof(long *) * maxValue);
 
+  //計測
   startTime = omp_get_wtime();
 
   //素数計算
@@ -86,16 +89,17 @@ int main(int argc, char *argv[]){
   endTime = omp_get_wtime();
   resultTime = (double)(endTime - startTime);
 
-  puts("\n-------------------------------");
-  printf("Time           is %lf (sec)\n", resultTime);
-  
-  printf("primeNumberNum is %ld (pieces)\n", primeNumberNum);
-  
   //ソート
   QSort(data, 0, maxValue - 1);
 
   //CSVファイルに書き込み
   setCSVFile(maxValue, data, primeNumberNum);
 
+  //結果表示
+  puts("\n-------------------------------");
+  printf("Time           is %lf (sec)\n", resultTime);
+  
+  printf("primeNumberNum is %ld (pieces)\n", primeNumberNum);
+  
   return 0;
 }
