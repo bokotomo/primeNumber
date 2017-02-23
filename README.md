@@ -23,6 +23,7 @@ prallel_main.c
 ・並列処理なしのプログラム  
 sequentially_main.c  
 
+
 # Performance at the moment
 0 - 10,000,000(Number of natural numbers)  
 ###・2.1GHz, 36(core)  
